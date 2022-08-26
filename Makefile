@@ -214,3 +214,6 @@ clean:
 
 .config_$(Build_Mode)_$(SGX_ARCH):
 	@touch .config_$(Build_Mode)_$(SGX_ARCH)
+	@mkdir -p $(OUTPUT)
+	@mkdir -p trusted/include
+	@mkdir -p untrusted/include
