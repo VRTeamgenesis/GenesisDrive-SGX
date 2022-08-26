@@ -1,0 +1,19 @@
+enclave {
+
+	//sgxsll library
+	from "sgx_tsgxssl.edl" import *;
+	from "sgx_pthread.edl" import *;
+	//sgxfs library
+	from "sgx_tprotected_fs.edl" import *;
+	include "sgx_tprotected_fs.h"
+	
+	trusted {
+		public void init();
+	};
+
+	untrusted {
+		void ocall_print([in,string] char* str);
+		void ocall_print_bytes([in,string]char* name,[in,size=len]unsigned char* b,size_t len);
+		void ocall_print_key_value([in,string] char* key, int value);
+	};
+};

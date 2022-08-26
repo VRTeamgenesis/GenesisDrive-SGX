@@ -1,0 +1,6 @@
+key/*
+out/*
+*.c
+*.o
+*.so
+app
