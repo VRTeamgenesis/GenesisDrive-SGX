@@ -8,7 +8,7 @@ enclave {
 	include "sgx_tprotected_fs.h"
 	
 	trusted {
-		public void init();
+		public void getkey([in,size=len] uint8_t* user_id,size_t len,[out,size=passlen]uint8_t* passphrase, size_t passlen);
 	};
 
 	untrusted {
