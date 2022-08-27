@@ -6,9 +6,11 @@ SGX_MODE ?= HW
 SGX_ARCH ?= x64
 SGX_DEBUG ?= 0
 
+JAVA_HOME ?= /usr/lib/jvm/java-8-openjdk-amd64/
+
 OUTPUT := out
 
-UAPP_NAME := $(OUTPUT)/app
+UAPP_NAME := $(OUTPUT)/libgdrive.so
 TAPP_NAME := $(OUTPUT)/trusted_enclave.so
 
 SGXSSL_INCLUDE_PATH := $(SGX_SSL)/include
@@ -129,7 +131,7 @@ untrusted/enclave_u.o: untrusted/enclave_u.c
 
 $(UAPP_NAME): untrusted/enclave_u.o 
 	@echo $@ $(Untrusted_Link_Flags) $(Untrusted_Cpp_Objects)
-	@$(CXX) untrusted/enclave_u.o $(SGX_COMMON_CXXFLAGS) $(Untrusted_Cpp_Flags) $(Untrusted_Link_Flags) -lpthread $(Untrusted_Cpp_Files) -lcrypto -o $@ 
+	@$(CXX) untrusted/enclave_u.o $(SGX_COMMON_CXXFLAGS) $(Untrusted_Cpp_Flags) $(Untrusted_Link_Flags) -lpthread $(Untrusted_Cpp_Files) -lcrypto -shared -o $@ 
 	@echo "LINK =>  $@"
 
 Crypto_Library_Name := sgx_tcrypto
@@ -210,7 +212,7 @@ endif
 clean:
 	@rm -f untrusted/*.o untrusted/*.c untrusted/include/enclave_u.h 
 	@rm -f trusted/*.o trusted/*.c trusted/include/enclave_t.h  
-	@rm -f $(OUTPUT)/* .config_*
+	@rm -f $(OUTPUT)/*.hex $(OUTPUT)/*.so $(OUTPUT)/gdrive .config_*
 
 .config_$(Build_Mode)_$(SGX_ARCH):
 	@touch .config_$(Build_Mode)_$(SGX_ARCH)
