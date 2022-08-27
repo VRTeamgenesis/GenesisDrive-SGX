@@ -6,6 +6,9 @@
 
 #include "enclave_u.h"
 
+#include <time.h>
+
+
 # define TOKEN_FILENAME   "enclave.token"
 # define ENCLAVE_FILENAME "trusted_enclave_signed.so"
 
@@ -26,8 +29,19 @@ int initialize_enclave(void)
 int SGX_CDECL main(int argc, char *argv[]) {
 
     initialize_enclave();
-    sgx_status_t t = init(global_eid);
-    printf("\n\n stat%x",t);
+    uint8_t *id = NULL;
+
+    srand ( time(NULL) );
+
+    id = (uint8_t*) malloc(32);
+    for(int i=0;i<32;i++)
+      id[i]=rand();  
+      ocall_print_bytes("id",id,32);
+
+    uint8_t passphrase [32];
+    sgx_status_t t = getkey(global_eid,id,32,passphrase,32);
+
+    ocall_print_bytes("passphrase",passphrase,32);
     return 0;
 }
 
