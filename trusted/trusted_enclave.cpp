@@ -84,7 +84,7 @@ size_t read_file(char* filename, uint8_t** content){
 }
 
 
-void getkey(uint8_t* id,size_t len,uint8_t* passphrase, size_t passlen) {
+void getkey(const uint8_t* id,size_t len,uint8_t* passphrase, size_t passlen) {
   
   sgx_sealed_data_t * keybytes = NULL;
   int readbytes = read_file("key.enc",(uint8_t**)&keybytes);
@@ -108,11 +108,25 @@ void getkey(uint8_t* id,size_t len,uint8_t* passphrase, size_t passlen) {
 
   uint8_t source[64];
 
-  memcpy(source,id,32);
+  ocall_print_bytes("id",(unsigned char*)id,len);
+
+  sgx_sha256_hash_t h_hash;
+  sgx_status_t ret = sgx_sha256_msg(id,len,&h_hash);
+
+  ocall_print_key_value("t",ret);
+
+  uint8_t * h = (uint8_t*)malloc(32);
+  memcpy(h,h_hash,32);
+  ocall_print_bytes("hash",(uint8_t*)h_hash,32);
+  ocall_print_bytes("key",(uint8_t*)key,32);
+  memcpy(source,h,32);
   memcpy(source+32,key,32);
 
+  ocall_print_bytes("s",source,64);
+
   sgx_sha256_hash_t p_hash;
-  sgx_status_t ret = sgx_sha256_msg(source,64,&p_hash);
+  ret = sgx_sha256_msg(source,64,&p_hash);
+  ocall_print_key_value("t",ret);
 
   memcpy(passphrase,p_hash,32);
 }

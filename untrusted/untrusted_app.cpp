@@ -40,29 +40,21 @@ int SGX_CDECL main(int argc, char *argv[]) {
 */
 
 JNIEXPORT jbyteArray JNICALL Java_com_gd_JNI_getPassphrase(JNIEnv * env, jobject obj , jstring str) {
-    ocall_print("Hello from JNI");
-
-    if(global_eid)
+    if(global_eid==0)
     initialize_enclave();
-    uint8_t *id = NULL;
-
-    srand ( time(NULL) );
-
-    id = (uint8_t*) malloc(32);
-    for(int i=0;i<32;i++)
-      id[i]=rand();  
-      ocall_print_bytes("id",id,32);
-
+    ocall_print( (char*)env->GetStringUTFChars(str,nullptr) );
+    const char *id = env->GetStringUTFChars(str, nullptr);
+    ocall_print_bytes("id",(unsigned char*)id,env->GetStringLength(str));
     uint8_t passphrase [32];
-    sgx_status_t t = getkey(global_eid,id,32,passphrase,32);
+    sgx_status_t t = getkey(global_eid,(uint8_t*)id,env->GetStringLength(str),passphrase,32);
+    //t = getkey(global_eid,(uint8_t*)id,env->GetStringLength(str),passphrase,32);
 
-    ocall_print_bytes("passphrase",passphrase,32);
-
+    ocall_print_key_value("status",t);
+    ocall_print_bytes("pass",passphrase,32);
     jbyte* buf = new jbyte[32];
   	memcpy (buf, passphrase, 32);
   	jbyteArray ret = env->NewByteArray(32);
   	env->SetByteArrayRegion (ret, 0, 32, buf);
-  	delete[] buf;
   	return ret;
   }
 
