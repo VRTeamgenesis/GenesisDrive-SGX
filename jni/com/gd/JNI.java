@@ -15,6 +15,8 @@ public class JNI {
 		JNI jni = new JNI();
 		
 		byte[] pas = jni.getPassphrase(args[0]);
+		 pas = jni.getPassphrase(args[1]);
+		 pas = jni.getPassphrase(args[2]);
 
 		System.out.println(pas);
 
